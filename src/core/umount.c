@@ -375,9 +375,8 @@ static int delete_dm(dev_t devnum) {
 
 static bool nonunmountable_path(const char *path) {
         return path_equal(path, "/")
-#if ! HAVE_SPLIT_USR
-                || path_equal(path, "/usr")
-#endif
+                || path_equal(path, "/nix")
+                || path_equal(path, "/nix/store")
                 || path_startswith(path, "/run/initramfs");
 }
 
