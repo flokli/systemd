@@ -22,7 +22,27 @@
 #include "list.h"
 #include "macro.h"
 
+typedef struct Network Network;
+typedef struct IPv6ProxyNDPAddress IPv6ProxyNDPAddress;
 typedef struct Link Link;
+
+struct IPv6ProxyNDPAddress {
+    Network *network;
+    struct in6_addr in_addr;
+
+    LIST_FIELDS(IPv6ProxyNDPAddress, ipv6_proxy_ndp_addresses);
+};
+
 
 int ipv6_proxy_ndp_set(Link *link);
 bool ipv6_proxy_ndp_is_enabled(Link *link);
+
+int ipv6_proxy_ndp_address_new_static(Network *network, IPv6ProxyNDPAddress ** ipv6_proxy_ndp_address);
+void ipv6_proxy_ndp_address_free(IPv6ProxyNDPAddress *ipv6_proxy_ndp_address);
+int ipv6_proxy_ndp_address_configure(Link *link, IPv6ProxyNDPAddress *ipv6_proxy_ndp_address);
+int ipv6_proxy_ndp_addresses_configure(Link *link);
+
+DEFINE_TRIVIAL_CLEANUP_FUNC(IPv6ProxyNDPAddress*, ipv6_proxy_ndp_address_free);
+#define _cleanup_ipv6_proxy_ndp_address_free_ _cleanup_(ipv6_proxy_ndp_address_freep)
+
+int config_parse_ipv6_proxy_ndp_address(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);

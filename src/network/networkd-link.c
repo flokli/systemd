@@ -2453,6 +2453,10 @@ static int link_configure(Link *link) {
         if (r < 0)
                return r;
 
+        r = ipv6_proxy_ndp_addresses_configure(link);
+        if (r < 0)
+                return r;
+
         r = link_set_ipv4_forward(link);
         if (r < 0)
                 return r;

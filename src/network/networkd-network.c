@@ -70,6 +70,7 @@ static int network_load_one(Manager *manager, const char *filename) {
         LIST_HEAD_INIT(network->static_addresses);
         LIST_HEAD_INIT(network->static_routes);
         LIST_HEAD_INIT(network->static_fdb_entries);
+        LIST_HEAD_INIT(network->ipv6_proxy_ndp_addresses);
 
         network->stacked_netdevs = hashmap_new(&string_hash_ops);
         if (!network->stacked_netdevs)
@@ -153,6 +154,7 @@ static int network_load_one(Manager *manager, const char *filename) {
                               "DHCPv4\0" /* compat */
                               "DHCPServer\0"
                               "IPv6AcceptRA\0"
+                              "IPv6NDPProxyAddress\0"
                               "Bridge\0"
                               "BridgeFDB\0"
                               "BridgeVLAN\0",
@@ -225,6 +227,7 @@ void network_free(Network *network) {
         Route *route;
         Address *address;
         FdbEntry *fdb_entry;
+        IPv6ProxyNDPAddress *ipv6_proxy_ndp_address;
         Iterator i;
 
         if (!network)
@@ -268,6 +271,9 @@ void network_free(Network *network) {
 
         while ((fdb_entry = network->static_fdb_entries))
                 fdb_entry_free(fdb_entry);
+
+        while ((ipv6_proxy_ndp_address = network->ipv6_proxy_ndp_addresses))
+                ipv6_proxy_ndp_address_free(ipv6_proxy_ndp_address);
 
         hashmap_free(network->addresses_by_section);
         hashmap_free(network->routes_by_section);
