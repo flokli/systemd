@@ -456,6 +456,27 @@ Domains= ~company ~.''')
         # should have company server as global server due to ~.
         self.assertIn('nameserver 192.168.42.1\n', contents)
 
+    def test_ipv6_proxy_ndp(self):
+        """check networkd setting proxy_ndp and adding ndp addrs to neigh table"""
+        self.write_network('dummy0.netdev', '''[NetDev]
+Name=dummy0
+Kind=dummy''')
+        self.write_network('dummy0.network', '''[Match]
+Name=dummy0
+[Network]
+IPv6ProxyNDPAddress=fd42::1
+DHCP=no''')
+
+        subprocess.check_call(['systemctl', 'start', 'systemd-networkd'])
+        self.assert_link_states(dummy0='managed')
+
+        with open('/proc/sys/net/ipv6/conf/dummy0/proxy_ndp') as f:
+            contents = f.read().strip()
+        assert(contents == '1')
+
+        out = subprocess.check_output(['ip', '-6', 'neigh', 'show', 'proxy'])
+        self.assertRegex(out, 'fd42::1 dev dummy0\s+proxy')
+
 
 @unittest.skipUnless(HAVE_DNSMASQ, 'dnsmasq not installed')
 class DnsmasqClientTest(ClientTestBase, unittest.TestCase):
