@@ -628,8 +628,9 @@
         <varlistentry>
           <term><varname>IPv6ProxyNDPAddress=</varname></term>
           <listitem><para>An IPv6 address, for which Neighbour Advertisement
-          messages will be sent. See <varname>IPv6ProxyNDP=</varname> for details.
-          This option may be specified more than once.
+          messages will be proxied. See <varname>IPv6ProxyNDP=</varname> for details.
+          This option may be specified more than once, and will then imply <varname>IPv6ProxyNDP=yes</varname>
+          in case it was not explicitly set before.
           Defaults to unset.
         </para></listitem>
         </varlistentry>

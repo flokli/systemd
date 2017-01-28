@@ -167,6 +167,10 @@ static int network_load_one(Manager *manager, const char *filename) {
         if (network->ip_masquerade)
                 network->ip_forward |= ADDRESS_FAMILY_IPV4;
 
+        /* IPv6ProxyNDPAddress entries imply IPv6ProxyNDP=yes if IPv6ProxyNDP was not set explicitly */
+        if (network->ipv6_proxy_ndp < 0 && network->n_ipv6_proxy_ndp_addresses > 0)
+                network->ipv6_proxy_ndp = 1;
+
         LIST_PREPEND(networks, manager->networks, network);
 
         r = hashmap_ensure_allocated(&manager->networks_by_name, &string_hash_ops);
