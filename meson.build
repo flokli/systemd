@@ -37,13 +37,6 @@ endif
 
 #####################################################################
 
-rootprefixdir = get_option('rootprefix')
-conf.set10('HAVE_SPLIT_USR', get_option('split-usr'))
-if get_option('split-usr')
-        rootprefixdir = rootprefixdir != '' ? rootprefixdir : '/'
-else
-        rootprefixdir = rootprefixdir != '' ? rootprefixdir : '/usr'
-endif
 
 sysvinit_path = get_option('sysvinit-path')
 sysvrcnd_path = get_option('sysvrcnd-path')
@@ -65,6 +58,14 @@ sysconfdir = join_paths(prefixdir, get_option('sysconfdir'))
 includedir = join_paths(prefixdir, get_option('includedir'))
 datadir = join_paths(prefixdir, get_option('datadir'))
 localstatedir = join_paths('/', get_option('localstatedir'))
+
+rootprefixdir = get_option('rootprefix')
+conf.set10('HAVE_SPLIT_USR', get_option('split-usr'))
+if get_option('split-usr')
+        rootprefixdir = rootprefixdir != '' ? rootprefixdir : prefixdir
+else
+        rootprefixdir = rootprefixdir != '' ? rootprefixdir : join_paths(prefixdir, '/usr')
+endif
 
 rootbindir = join_paths(rootprefixdir, 'bin')
 rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
