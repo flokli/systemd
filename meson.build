@@ -535,7 +535,13 @@ conf.set('GPERF_LEN_TYPE', gperf_len_type,
 
 ############################################################
 
-if not cc.has_header('sys/capability.h')
+libcap = dependency('libcap', required : false)
+if not libcap.found()
+        # Compat with Ubuntu 14.04 which ships libcap w/o .pc file
+        libcap = cc.find_library('cap')
+endif
+
+if not cc.has_header('sys/capability.h', dependencies: libcap)
         error('POSIX caps headers not found')
 endif
 foreach header : ['linux/btrfs.h',
@@ -657,12 +663,6 @@ librt = cc.find_library('rt')
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
 libcrypt = cc.find_library('crypt')
-
-libcap = dependency('libcap', required : false)
-if not libcap.found()
-        # Compat with Ubuntu 14.04 which ships libcap w/o .pc file
-        libcap = cc.find_library('cap')
-endif
 
 libmount = dependency('mount',
                       version : '>= 2.30')
